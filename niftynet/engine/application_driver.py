@@ -56,6 +56,7 @@ class ApplicationDriver(object):
         self.max_checkpoints = 2
         self.save_every_n = 0
         self.tensorboard_every_n = -1
+        self.vars_to_restore = ''
 
         self.initial_iter = 0
         self.final_iter = 0
@@ -136,7 +137,7 @@ class ApplicationDriver(object):
             do_new_partition = \
                 self.is_training_action and \
                 (not os.path.isfile(system_param.dataset_split_file)) and \
-                (train_param.exclude_fraction_for_validation > 0 or \
+                (train_param.exclude_fraction_for_validation > 0 or
                  train_param.exclude_fraction_for_inference > 0)
             data_fractions = (train_param.exclude_fraction_for_validation,
                               train_param.exclude_fraction_for_inference) \

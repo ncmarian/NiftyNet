@@ -80,11 +80,11 @@ class ModelRestorer(object):
             # restore using regex matching
             var_regex = re.compile(self.vars_to_restore)
             to_restore, to_randomise = [], []
-            for v in var_list:
-                if var_regex.search(v.name):
-                    to_restore.append(v)
+            for restorable in var_list:
+                if var_regex.search(restorable.name):
+                    to_restore.append(restorable)
                 else:
-                    to_randomise.append(v)
+                    to_randomise.append(restorable)
 
             tf.logging.info("Randomizing {} variables".format(
                 len(to_randomise)))
@@ -93,15 +93,16 @@ class ModelRestorer(object):
             tf.get_default_session().run(init_op)
         else:
             # Restore all vars
-            to_restore = var_list
+            to_restore = None
 
         tf.logging.info('Restoring %d variables from iter %d',
-            len(to_restore), self.initial_iter)
+                        len(to_restore), self.initial_iter)
         checkpoint = '{}-{}'.format(self.file_name_prefix, self.initial_iter)
         tf.logging.info('Accessing %s', checkpoint)
 
         try:
-            saver = tf.train.Saver(var_list=to_restore, save_relative_paths=True)
+            saver = tf.train.Saver(
+                var_list=to_restore, save_relative_paths=True)
             saver.restore(tf.get_default_session(), checkpoint)
         except tf.errors.NotFoundError:
             tf.logging.fatal(
